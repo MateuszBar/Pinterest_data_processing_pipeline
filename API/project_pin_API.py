@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 from json import dumps
-from kafka import KafkaProducer
+#from kafka import KafkaProducer
 
 app = FastAPI()
 

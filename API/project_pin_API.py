@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 from json import dumps
-#from kafka import KafkaProducer
+from kafka import KafkaProducer
 
 app = FastAPI()
 
@@ -19,12 +19,16 @@ class Data(BaseModel):
     downloaded: int
     save_location: str
 
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+                         value_serializer=lambda x: 
+                         dumps(x).encode('utf-8'))
 
 @app.post("/pin/")
-def get_db_row(item: Data):
+def get_data(item: Data):
     data = dict(item)
+    producer.send('PinterestTopic',value=data)
     return item
-
 
 if __name__ == '__main__':
     uvicorn.run("project_pin_API:app", host="localhost", port=8000)
+    

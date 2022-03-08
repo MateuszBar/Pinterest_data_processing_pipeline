@@ -12,14 +12,14 @@ class Consumer(threading.Thread):
         
     def run(self):
         consumer = KafkaConsumer(
-            "user_signups",
+            "PinterestTopic",
             bootstrap_servers=["localhost:9092"],
             auto_offset_reset="earliest",
             enable_auto_commit=True,
         )
         
         for message in consumer:
-            self.process_message(message.value)
+            self.process_message(message)
             
         consumer.close()
         

@@ -2,9 +2,9 @@ from time import sleep
 from kafka import KafkaConsumer
 import threading
 from queue import Queue, Empty
+import boto3
 
 message_queue = Queue()
-
 
 class Consumer(threading.Thread):
     def __init__(self):
@@ -16,6 +16,7 @@ class Consumer(threading.Thread):
             bootstrap_servers=["localhost:9092"],
             auto_offset_reset="earliest",
             enable_auto_commit=True,
+            group_id="group1"
         )
         
         for message in consumer:
@@ -41,7 +42,7 @@ def process_messages():
       
     # Combine all messages into 1 call
     print(temp_messages)
-    
+
 if __name__ == "__main__":
     print("starting batch consumer worker")
     

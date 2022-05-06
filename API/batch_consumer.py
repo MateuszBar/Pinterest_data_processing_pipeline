@@ -1,54 +1,26 @@
 from time import sleep
 from kafka import KafkaConsumer
-import threading
-from queue import Queue, Empty
+import boto3
+import json
 
-message_queue = Queue()
+botoclient = boto3.client('s3')
 
-
-class Consumer(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        
-    def run(self):
-        consumer = KafkaConsumer(
-            "PinterestTopic",
-            bootstrap_servers=["localhost:9092"],
-            auto_offset_reset="earliest",
-            enable_auto_commit=True,
-        )
-        
-        for message in consumer:
-            self.process_message(message)
-            
-        consumer.close()
-        
-    def process_message(self, message):
-        # Insert the message into buffer queue
-        message_queue.put(message)
-        
-        
-def process_messages():
-    print("processing message in queue buffer")
-    temp_messages = []
-    
-    try:
-        while True:
-            temp_messages.append(message_queue.get_nowait())
-
-    except Empty:
-        pass
-      
-    # Combine all messages into 1 call
-    print(temp_messages)
-    
 if __name__ == "__main__":
-    print("starting batch consumer worker")
-    
-    consumer = Consumer()
-    consumer.daemon = True
-    consumer.start()
-    
-    while True:
-        process_messages()
-        sleep(5)
+    print("starting batch consumer app")
+    consumer = KafkaConsumer(
+        'PinterestTopic',
+        bootstrap_servers=["localhost:9092"],
+        group_id="group1"
+    )
+    message_queue = []
+    for message in consumer:
+        while message_queue < 501:
+            message_queue+=message.value
+        else:
+            message_queue_json = json.dumps(message_queue)
+            botoclient.put_object(
+                body=json.dumps(message_queue_json),
+                bucket='pinterestprojectpipeline',
+                key='new_user_credentials.csv'
+            )
+            message_queue=[]

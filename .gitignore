@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 User_Emulation
+new_user_credentials.csv

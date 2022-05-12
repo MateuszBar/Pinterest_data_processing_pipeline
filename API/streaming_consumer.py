@@ -1,3 +1,4 @@
+from email.header import decode_header
 from kafka import KafkaConsumer
 from time import sleep
 
@@ -13,4 +14,5 @@ if __name__ == "__main__":
     )
     
     for message in consumer:
-        process_message(message.value)
+        decoded_message = message.value.decode('utf-8')
+        process_message(decoded_message)

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     message_queue = []
     for message in consumer:
         while message_queue < 501:
-            message_queue+=message.value
+            message_queue += message.value
         else:
             message_queue_json = json.dumps(message_queue)
             botoclient.put_object(

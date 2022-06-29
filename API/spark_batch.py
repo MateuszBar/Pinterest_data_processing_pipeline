@@ -10,6 +10,8 @@ from pyspark.sql.functions import col,lit,split
 from pyspark import SparkContext
 from pyspark.sql.functions import UserDefinedFunction
 from pyspark.sql.types import StringType,FloatType,IntegerType,StructType,StructField,ArrayType,BooleanType
+from cassandra.cluster import Cluster
+
 
 #setting up s3 bucket
 s3 = boto3.resource('s3')
@@ -27,7 +29,7 @@ config.read(os.path.expanduser("~/.aws/credentials"))
 access_id = config.get("default", "aws_access_key_id") 
 access_key = config.get("default", "aws_secret_access_key")
 
-# config or pyspark session
+# config for pyspark session
 cfg = (
     pyspark.SparkConf()
     .setMaster(f"local[{multiprocessing.cpu_count()}]")
@@ -73,8 +75,8 @@ udf_fix_tag_list = UserDefinedFunction(lambda x:x.split(','), ArrayType(StringTy
 #apply functions to dataframe
 new_df = df.withColumn("is_image_or_video", udf_img_or_vid(col("is_image_or_video")))
 new_df = new_df.withColumn("follower_count", udf_fix_follower_count(col("follower_count")))
-new_df = new_df.withColumn("tag_list", udf_fix_tag_list(col("tag_list")))
+#new_df = new_df.withColumn("tag_list", udf_fix_tag_list(col("tag_list")))
 
 new_df.show()
-
 new_df.printSchema()
+new_df.coalesce(1).write.mode('overwrite').format('csv').save('temp_pinterestdata')

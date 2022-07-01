@@ -25,7 +25,7 @@ default_args = {
 
 def get_json_data(**context):
     task_instance = context["ti"]
-    path_to_json = '/home/mateusz/Coding/Coding/temp_pinterestdata/'
+    path_to_json = '/home/mateusz/apache-cassandra-3.11.13/temp_pinterestdata/'
     json_files = [pos_json for pos_json in os.listdir(path_to_json) if pos_json.endswith('.json')]
     file_path = path_to_json + json_files[0]
     json_data = []
@@ -42,16 +42,19 @@ def insert_into_cassandra_db(**context):
     session = cluster.connect('data')
 
     for i in range(0, len(pinterest_data)):
-        session.execute(
-        """
-        INSERT INTO data.pinterest_data (category, description, downloaded, follower_count, image_src, idx, is_image_or_video, save_location, tag_list, title, unique_id)
-        VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s,  %s )
-        """,(pinterest_data[i]["category"], pinterest_data[i]["description"], 
-        pinterest_data[i]["downloaded"], pinterest_data[i]["follower_count"], 
-        pinterest_data[i]["image_src"], pinterest_data[i]["index"],
-        pinterest_data[i]["is_image_or_video"], pinterest_data[i]["save_location"], 
-        pinterest_data[i]["tag_list"], pinterest_data[i]["title"], pinterest_data[i]["unique_id"],)
-        )
+        try:
+            session.execute(
+            """
+            INSERT INTO data.pinterest_data (category, description, downloaded, follower_count, image_src, idx, is_image_or_video, save_location, tag_list, title, unique_id)
+            VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s,  %s )
+            """,(pinterest_data[i]["category"], pinterest_data[i]["description"], 
+            pinterest_data[i]["downloaded"], pinterest_data[i]["follower_count"], 
+            pinterest_data[i]["image_src"], pinterest_data[i]["index"],
+            pinterest_data[i]["is_image_or_video"], pinterest_data[i]["save_location"], 
+            pinterest_data[i]["tag_list"], pinterest_data[i]["title"], pinterest_data[i]["unique_id"],)
+            )
+        except KeyError:
+            continue
         print("Done Sending data")
 
 with DAG(dag_id='daily_spark_job',

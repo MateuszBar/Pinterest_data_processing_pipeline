@@ -1,0 +1,18 @@
+in external terminals:
+1  ~/kafka_2.13-3.0.0/bin/zookeeper-server-start.sh ./config/zookeeper.properties
+2  ~/kafka_2.13-3.0.0/bin/kafka-server-start.sh ./config/server.properties
+
+in vscode: 
+1  project_pin_API.py
+2  user_posting_emulation.py
+3  batch_consumer.py
+
+in external terminals:
+1  ~/apache-cassandra-3.11.13/bin/cassandra
+2  ~/apache-cassandra-3.11.13/bin/cqlsh
+3  airflow db init
+4  airflow webserver --port 8081
+5  airflow scheduler 
+
+go to localhost:8081 
+

@@ -18,7 +18,7 @@ if __name__ == "__main__":
         decoded_message = json.loads(message.value.decode('utf-8'))
         message_queue.append(decoded_message)
         print(f"{len(message_queue)} messages in queue")
-        if len(message_queue) > 99:
+        if len(message_queue) > 299:
             print("sending messages to s3 bucket\n")
             botoclient.put_object(
                 Body=json.dumps(message_queue),

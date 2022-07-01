@@ -52,7 +52,7 @@ def insert_into_cassandra_db(**context):
         pinterest_data[i]["is_image_or_video"], pinterest_data[i]["save_location"], 
         pinterest_data[i]["tag_list"], pinterest_data[i]["title"], pinterest_data[i]["unique_id"])
         )
-        print("Done Sending data")  
+        print("Done Sending data")
 
 with DAG(dag_id='daily_spark_job',
          default_args=default_args,
@@ -60,17 +60,15 @@ with DAG(dag_id='daily_spark_job',
          catchup=False,
          tags=['pinterest','pipeline', 'spark']
          ) as dag:
-    # create a task to run a bash command
+    
     run_spark_job = BashOperator(
         task_id='spark_job',
         bash_command='cd /home/mateusz/apache-cassandra-3.11.13 && python3 /home/mateusz/Coding/Coding/API/spark_batch.py')
     run_get_json_data = PythonOperator(
         task_id='get_json_data',
         python_callable=get_json_data)
-
-    run_cassandra_startup = BashOperator(
-        task_id='cassandra_startup',
-        bash_command='cd /home/mateusz/apache-cassandra-3.11.13 && ./bin/cassandra && xdotool key ctrl+shift+t && cd /home/mateusz/apache-cassandra-3.11.13 && ./bin/cqlsh && DESCRIBE TABLinterest_data;'
-        )
-    
-    run_spark_job >> run_get_json_data >> run_cassandra_startup
+    run_insert_into_cassandra_db = PythonOperator(
+        task_id='insert_into_cassandra_db',
+        python_callable=insert_into_cassandra_db)
+            
+    run_spark_job >> run_get_json_data >> run_insert_into_cassandra_db

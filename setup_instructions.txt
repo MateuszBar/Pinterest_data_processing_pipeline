@@ -1,11 +1,17 @@
+Kafka Setup
+
 in external terminals:
 1  ~/kafka_2.13-3.0.0/bin/zookeeper-server-start.sh ./config/zookeeper.properties
 2  ~/kafka_2.13-3.0.0/bin/kafka-server-start.sh ./config/server.properties
+
+API Setup
 
 in vscode: 
 1  project_pin_API.py
 2  user_posting_emulation.py
 3  batch_consumer.py
+
+Cassandra and Airflow Setup
 
 in external terminals:
 1  ~/apache-cassandra-3.11.13/bin/cassandra
@@ -14,5 +20,13 @@ in external terminals:
 4  airflow webserver --port 8081
 5  airflow scheduler 
 
+Airflow Dashboard
 go to localhost:8081 
+
+Prometheus monitoring:
+1  ~/prometheus-2.36.2.linux-amd64$/prometheus --config.file=prometheus.yml
+2  go to localhost:9090
+
+Grafana: 
+
 

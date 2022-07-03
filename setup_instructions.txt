@@ -1,3 +1,6 @@
+----------------------------------------------------------------------------------------
+FOR BATCH PROCESSING:
+
 Kafka Setup
 
 in external terminals:
@@ -29,6 +32,12 @@ Prometheus monitoring:
 
 Grafana: 
 1  go to localhost:3000
+
+--------------------------------------------------------------------------------------
+FOR STREAMING 
+
+1  run pyspark in terminal
+2  run streaming_consumer.py
 
 
 

@@ -28,5 +28,7 @@ Prometheus monitoring:
 2  go to localhost:9090
 
 Grafana: 
+1  go to localhost:3000
+
 
 

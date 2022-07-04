@@ -10,28 +10,28 @@ in external terminals:
 API Setup
 
 in vscode: 
-1  project_pin_API.py
-2  user_posting_emulation.py
-3  batch_consumer.py
+3  project_pin_API.py
+4  user_posting_emulation.py
+5  batch_consumer.py
 
 Cassandra and Airflow Setup
 
 in external terminals:
-1  ~/apache-cassandra-3.11.13/bin/cassandra
-2  ~/apache-cassandra-3.11.13/bin/cqlsh
-3  airflow db init
-4  airflow webserver --port 8081
-5  airflow scheduler 
+6  ~/apache-cassandra-3.11.13/bin/cassandra
+7  ~/apache-cassandra-3.11.13/bin/cqlsh
+8  airflow db init
+9  airflow webserver --port 8081
+10  airflow scheduler 
 
 Airflow Dashboard
 go to localhost:8081 
 
 Prometheus monitoring:
-1  ~/prometheus-2.36.2.linux-amd64$/prometheus --config.file=prometheus.yml
-2  go to localhost:9090
+11  ~/prometheus-2.36.2.linux-amd64$/prometheus --config.file=prometheus.yml
+12  go to localhost:9090
 
 Grafana: 
-1  go to localhost:3000
+13  go to localhost:3000
 
 --------------------------------------------------------------------------------------
 FOR STREAMING 

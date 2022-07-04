@@ -72,6 +72,11 @@ def fix_tag_list(tag_list) -> ArrayType(StringType()):
     else:
         return ArrayType(StringType(tag_list.split(',')))
 
+#apply mappings to df stream
+stream_df = stream_df.withColumn("is_image_or_video").map(lambda x: fix_is_image_or_video(x))
+stream_df = stream_df.withColumn("follower_count").map(lambda x: fix_follower_count(x))
+stream_df = stream_df.withColumn("tag_list").map(lambda x: fix_tag_list(x))
+
 # Select the value part of the kafka message and cast it to a string.
 stream_df = stream_df.selectExpr("CAST(value as STRING)")
 

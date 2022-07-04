@@ -4,8 +4,10 @@ import uvicorn
 from json import dumps
 from kafka import KafkaProducer
 
+#initialise fastapi
 app = FastAPI()
 
+#create data class model
 class Data(BaseModel):
     category: str
     index: int
@@ -19,10 +21,12 @@ class Data(BaseModel):
     downloaded: int
     save_location: str
 
+#create producer
 producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x: 
                          dumps(x).encode('utf-8'))
 
+#post data
 @app.post("/pin/")
 def get_data(item: Data):
     data = dict(item)

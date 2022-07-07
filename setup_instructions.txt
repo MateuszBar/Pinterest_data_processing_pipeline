@@ -27,17 +27,23 @@ Airflow Dashboard
 go to localhost:8081 
 
 Prometheus monitoring:
-11  ~/prometheus-2.36.2.linux-amd64$/prometheus --config.file=prometheus.yml
-12  go to localhost:9090
+11  cd prometheus-2.36.2.linux-amd64$
+12  prometheus --config.file=prometheus.yml
+13  go to localhost:9090
 
 Grafana: 
-13  go to localhost:3000
+14  go to localhost:3000
 
 --------------------------------------------------------------------------------------
 FOR STREAMING 
 
 1  run pyspark in terminal
 2  run streaming_consumer.py
+
+FOR POSTGRES DATABASE
+
+1  sudo /usr/pgadmin4/bin/setup-web.sh
+2  http://127.0.0.1/pgadmin4 
 
 
 

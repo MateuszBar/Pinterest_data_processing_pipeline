@@ -5,10 +5,13 @@ import os
 from pyspark.sql import SparkSession
 import pyspark
 import multiprocessing
-from pyspark.sql.types import StringType,FloatType,IntegerType,StructType,StructField,ArrayType,BooleanType
+from pyspark.sql.types import StringType,FloatType,IntegerType,StructType,StructField,ArrayType,BooleanType,NullType
+from pyspark.sql.functions import col,UserDefinedFunction
+from passwords import postgres_user,postgres_password
 
 # Download spark sql kakfa package from Maven repository and submit to PySpark at runtime. 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 pyspark-shell'
+os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.postgresql:postgresql:42.4.0 pyspark-shell'
 # specify the topic we want to stream data from.
 kafka_topic_name = "PinterestTopic"
 # Specify your Kafka server to read data from.
@@ -50,7 +53,7 @@ def fix_is_image_or_video(x) -> StringType():
     elif x == 'image':
         return 'image'
     else:
-        return StringType(x)
+        return x
 
 #function change follower count to integer
 def fix_follower_count(x) -> float:
@@ -65,24 +68,48 @@ def fix_follower_count(x) -> float:
             return FloatType(x.replace('m', '')) * 1000000
         return 1000000.0
 
-#function to fix tag list
-def fix_tag_list(tag_list) -> ArrayType(StringType()):
-    if tag_list is None:
-        return None
+#function to fix errors in image_src column
+def fix_image_src(x) -> StringType():
+    if x == "Image src error.":
+        return NullType()
     else:
-        return ArrayType(StringType(tag_list.split(',')))
+        return x
+
+#defining UDFs into memory
+fix_is_image_or_video_UDF = UserDefinedFunction(lambda x: fix_is_image_or_video(x), StringType())
+fix_follower_count_UDF = UserDefinedFunction(lambda x: fix_follower_count(x), FloatType())
+fix_image_src_UDF = UserDefinedFunction(lambda x: fix_image_src(x), StringType())
 
 #apply mappings to df stream
-stream_df = stream_df.withColumn("is_image_or_video").map(lambda x: fix_is_image_or_video(x))
-stream_df = stream_df.withColumn("follower_count").map(lambda x: fix_follower_count(x))
-stream_df = stream_df.withColumn("tag_list").map(lambda x: fix_tag_list(x))
-
+stream_df.replace("multi-video(story page format)", "video")
+#stream_df = stream_df.withColumn("is_image_or_video")
+#stream_df = stream_df.withColumn("image_src", fix_image_src_UDF(stream_df.image_src)).collect()
 # Select the value part of the kafka message and cast it to a string.
 stream_df = stream_df.selectExpr("CAST(value as STRING)")
 
 # outputting the messages to the console 
+#stream_df.writeStream \
+#    .format("jdbc") \
+#    .outputMode("append") \
+#    .start()\
+#    .awaitTermination()
+
+def _write_streaming(
+    df,
+    epoch_id
+) -> None:         
+
+    df.write \
+        .mode('append') \
+        .format("jdbc") \
+        .option("url", f"jdbc:postgresql://localhost:5432/postgres") \
+        .option("driver", "org.postgresql.Driver") \
+        .option("dbtable", 'StreamingData') \
+        .option("user", postgres_user) \
+        .option("password", postgres_password) \
+        .save() 
+
 stream_df.writeStream \
-    .format("console") \
-    .outputMode("append") \
+    .foreachBatch(_write_streaming) \
     .start()\
     .awaitTermination()

@@ -10,8 +10,8 @@ from pyspark.sql.functions import col,UserDefinedFunction
 from passwords import postgres_user,postgres_password
 
 # Download spark sql kakfa package from Maven repository and submit to PySpark at runtime. 
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 pyspark-shell'
-os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.postgresql:postgresql:42.4.0 pyspark-shell'
+os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.postgresql:postgresql:42.4.0 pyspark-shell'
+#os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.postgresql:postgresql:42.4.0 pyspark-shell'
 # specify the topic we want to stream data from.
 kafka_topic_name = "PinterestTopic"
 # Specify your Kafka server to read data from.
@@ -104,7 +104,7 @@ def _write_streaming(
         .format("jdbc") \
         .option("url", f"jdbc:postgresql://localhost:5432/postgres") \
         .option("driver", "org.postgresql.Driver") \
-        .option("dbtable", 'StreamingData') \
+        .option("dbtable", "PinterestProject") \
         .option("user", postgres_user) \
         .option("password", postgres_password) \
         .save() 

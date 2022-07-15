@@ -11,7 +11,7 @@ from passwords import postgres_user,postgres_password
 
 # Download spark sql kakfa package from Maven repository and submit to PySpark at runtime. 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,org.postgresql:postgresql:42.4.0 pyspark-shell'
-#os.environ['PYSPARK_SUBMIT_ARGS'] = '--packages org.postgresql:postgresql:42.4.0 pyspark-shell'
+
 # specify the topic we want to stream data from.
 kafka_topic_name = "PinterestTopic"
 # Specify your Kafka server to read data from.
@@ -55,7 +55,7 @@ def fix_is_image_or_video(x) -> StringType():
     else:
         return x
 
-#function change follower count to integer
+#function to change follower count to float
 def fix_follower_count(x) -> float:
     if type(x) == float or type(x) == int:
         return FloatType(x)
@@ -94,6 +94,7 @@ stream_df = stream_df.selectExpr("CAST(value as STRING)")
 #    .start()\
 #    .awaitTermination()
 
+# function to send data to postgres database
 def _write_streaming(
     df,
     epoch_id
@@ -109,6 +110,7 @@ def _write_streaming(
         .option("password", postgres_password) \
         .save() 
 
+# start writing stream
 stream_df.writeStream \
     .foreachBatch(_write_streaming) \
     .start()\

@@ -24,6 +24,7 @@ response = obj.get()
 
 findspark.init()
 
+# getting aws credentials
 config = configparser.ConfigParser()
 config.read(os.path.expanduser("~/.aws/credentials"))
 access_id = config.get("default", "aws_access_key_id") 
@@ -44,7 +45,7 @@ sc = session.sparkContext
 
 df = session.createDataFrame(json.loads(response['Body'].read().decode('utf-8')))
 
-#function to change normalise is_image_or_video column
+#function to normalise is_image_or_video column
 def fix_is_image_or_video(x) -> StringType():
     if x == 'multi-video(story page format)':
         return 'video'
@@ -52,8 +53,6 @@ def fix_is_image_or_video(x) -> StringType():
         return 'image'
     else:
         return x
-#create udf for is_image_or_video function
-udf_img_or_vid = UserDefinedFunction(lambda x:fix_is_image_or_video(x), StringType())
 
 #function change follower count to integer
 def fix_follower_count(x) -> float:
@@ -68,11 +67,12 @@ def fix_follower_count(x) -> float:
             return float(x.replace('m', '')) * 1000000
         return 1000000.0
 
+# define UDF's for functions
+udf_img_or_vid = UserDefinedFunction(lambda x:fix_is_image_or_video(x), StringType())
 udf_fix_follower_count = UserDefinedFunction(lambda x:fix_follower_count(x), FloatType())
-
 udf_fix_tag_list = UserDefinedFunction(lambda x:x.split(','), ArrayType(StringType()))
 
-#apply functions to dataframe
+#apply functions to dataframe columns
 new_df = df.withColumn("is_image_or_video", udf_img_or_vid(col("is_image_or_video")))
 new_df = new_df.withColumn("follower_count", udf_fix_follower_count(col("follower_count")))
 new_df = new_df.withColumn("tag_list", udf_fix_tag_list(col("tag_list")))

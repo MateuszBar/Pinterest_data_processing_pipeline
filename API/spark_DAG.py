@@ -25,7 +25,7 @@ default_args = {
     'end_date': datetime(2024, 1, 1)
 }
 
-#function to get json data files from storage directory 
+#function to get json data files from temp storage directory 
 def get_json_data(**context):
     #define task instance
     task_instance = context["ti"]
@@ -77,7 +77,7 @@ with DAG(dag_id='daily_spark_job',
          tags=['pinterest','pipeline', 'spark']
          ) as dag:
     
-    #run get_json_data task from cassandra storage directory
+    #run spark_batch script from cassandra storage directory to get data from kafka into temp storage
     run_spark_job = BashOperator(
         task_id='spark_job',
         bash_command='cd /home/mateusz/apache-cassandra-3.11.13 && python3 /home/mateusz/Coding/Coding/API/spark_batch.py')

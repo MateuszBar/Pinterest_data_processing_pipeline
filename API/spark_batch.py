@@ -47,6 +47,13 @@ df = session.createDataFrame(json.loads(response['Body'].read().decode('utf-8'))
 
 #function to normalise is_image_or_video column
 def fix_is_image_or_video(x) -> StringType():
+    '''
+    Filters input into two types of output
+
+        Args: x - input string
+
+        Returns: 'video' or 'image' or x - string type 
+    '''
     if x == 'multi-video(story page format)':
         return 'video'
     elif x == 'image':
@@ -56,6 +63,13 @@ def fix_is_image_or_video(x) -> StringType():
 
 #function change follower count to integer
 def fix_follower_count(x) -> float:
+    '''
+    Function that replaces k with 1000 and changes string into float
+
+        Args: x - input string
+
+        Returns: x converted into float type
+    '''
     if type(x) == float or type(x) == int:
         return x
     if 'k' in x:

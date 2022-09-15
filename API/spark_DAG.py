@@ -27,6 +27,9 @@ default_args = {
 
 #function to get json data files from temp storage directory 
 def get_json_data(**context):
+    '''
+    Function that downloads data from a path and sends them to the task instance 
+    '''
     #define task instance
     task_instance = context["ti"]
     #define storage directory
@@ -42,6 +45,9 @@ def get_json_data(**context):
 
 #function that inserts data from context into cassandra table
 def insert_into_cassandra_db(**context):
+    '''
+    Function that inserts data from the task context into a cassandra table
+    '''
     #define task instance
     task_instance = context["ti"]
     #pull data from task instance
